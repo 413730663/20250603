@@ -2,25 +2,24 @@ let video;
 let handPose;
 let hands = [];
 
-function setup() {
-  createCanvas(640, 480);
-
+function preload() {
   // 啟用攝影機並將其作為影像來源
-  video = createCapture(VIDEO, () => {
-    console.log('Camera is ready!');
-  });
+  video = createCapture(VIDEO);
   video.size(640, 480);
   video.hide();
 
   // 初始化 handpose 模型
-  handPose = ml5.handpose(video, modelReady);
+  handPose = ml5.handpose(video, () => {
+    console.log('Handpose model loaded!');
+  });
 
   // 當模型有偵測結果時，觸發回呼函數
   handPose.on('predict', gotHands);
 }
 
-function modelReady() {
-  console.log('Handpose model loaded!');
+function setup() {
+  createCanvas(640, 480);
+  console.log('Setup complete!');
 }
 
 function draw() {
