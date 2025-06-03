@@ -35,9 +35,9 @@ function draw() {
     let hand = hands[i];
     for (let j = 0; j < hand.landmarks.length; j++) {
       let keypoint = hand.landmarks[j];
-      fill(0, 255, 0);
+      fill(0, 255, 0); // 綠色填充
       noStroke();
-      circle(keypoint[0], keypoint[1], 10);
+      circle(keypoint[0], keypoint[1], 10); // 繪製關鍵點
     }
   }
 
@@ -50,6 +50,6 @@ function draw() {
 
 function gotHands(results) {
   console.log(results); // 檢查結果是否正確
-  hands = results;
+  hands = results; // 儲存所有偵測到的手部資料
 }
 
