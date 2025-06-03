@@ -22,12 +22,12 @@ function setup() {
   createCanvas(640, 480);
   console.log('Setup complete!');
 
-  // 生成 10 顆泡泡
-  for (let i = 0; i < 10; i++) {
+  // 生成 5 顆泡泡
+  for (let i = 0; i < 5; i++) {
     let bubble = {
       x: random(width), // 隨機 x 座標
       y: random(height), // 隨機 y 座標
-      r: random(10, 30), // 隨機半徑
+      r: random(30, 50), // 隨機半徑（調大）
       xSpeed: random(-2, 2), // 隨機水平速度
       ySpeed: random(-2, 2) // 隨機垂直速度
     };
