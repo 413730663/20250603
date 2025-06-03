@@ -1,51 +1,21 @@
-
-let video; let handPose; let hands = [];
-let font; let size = 35;
-let magnets = []; let num = 5;
-
-function preload() {
-  font = loadFont("Outfit-Regular.ttf");
-  handPose = ml5.handPose({flipped: true});
-}
+let video;
 
 function setup() {
+  // 建立一個 640x480 的畫布
   createCanvas(640, 480);
-  // Detect video & load ML model
-  video = createCapture(VIDEO, {flipped: true});
-  video.hide();
-  handPose.detectStart(video, gotHands);
-  
-  // Create magnet objects
-  rectMode(CENTER);
-  for (let i=0; i<num; i++) {
-    magnets[i] = new Magnet();
-  }
+
+  // 啟用攝影機並將其作為影像來源
+  video = createCapture(VIDEO);
+  video.size(640, 480); // 設定影像大小
+  video.hide(); // 隱藏原始的 HTML 視訊元素
 }
 
 function draw() {
-  background(220);
-  
-  // Display video and detect index and thumb position
+  // 將攝影機影像繪製到畫布上
   image(video, 0, 0, width, height);
-  if (hands.length > 0) {
-    let index = hands[0].keypoints[8];
-    let thumb = hands[0].keypoints[4];
-    
-    noFill();
-    stroke(0, 255, 0);
-    text("index", index.x, index.y);
-    text("thumb", thumb.x, thumb.y);
-  
-    for (let i=0; i<num; i++) {
-      magnets[i].touch(thumb.x, thumb.y, index.x, index.y);
-    }
-  }
-  
-  for (let i=0; i<num; i++) {
-    magnets[i].display();
-  }
-}
 
-function gotHands(results) {
-  hands = results;
+  // 在畫布上繪製其他內容（例如辨識結果）
+  fill(255, 0, 0);
+  textSize(32);
+  text('影像辨識中...', 10, 40);
 }
