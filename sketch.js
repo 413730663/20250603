@@ -1,6 +1,7 @@
 let video;
 let handPose;
 let hands = [];
+let bubbles = []; // 儲存泡泡的陣列
 
 function preload() {
   // 啟用攝影機並將其作為影像來源
@@ -20,6 +21,18 @@ function preload() {
 function setup() {
   createCanvas(640, 480);
   console.log('Setup complete!');
+
+  // 生成 10 顆泡泡
+  for (let i = 0; i < 10; i++) {
+    let bubble = {
+      x: random(width), // 隨機 x 座標
+      y: random(height), // 隨機 y 座標
+      r: random(10, 30), // 隨機半徑
+      xSpeed: random(-2, 2), // 隨機水平速度
+      ySpeed: random(-2, 2) // 隨機垂直速度
+    };
+    bubbles.push(bubble);
+  }
 }
 
 function draw() {
@@ -39,6 +52,24 @@ function draw() {
       noStroke();
       circle(keypoint[0], keypoint[1], 10); // 繪製關鍵點
     }
+  }
+
+  // 繪製泡泡
+  for (let i = 0; i < bubbles.length; i++) {
+    let bubble = bubbles[i];
+
+    // 更新泡泡位置
+    bubble.x += bubble.xSpeed;
+    bubble.y += bubble.ySpeed;
+
+    // 碰到邊界反彈
+    if (bubble.x < 0 || bubble.x > width) bubble.xSpeed *= -1;
+    if (bubble.y < 0 || bubble.y > height) bubble.ySpeed *= -1;
+
+    // 繪製泡泡
+    fill(0, 0, 255, 150); // 半透明藍色
+    noStroke();
+    ellipse(bubble.x, bubble.y, bubble.r * 2);
   }
 
   // 恢復畫布翻轉，繪製不被翻轉的文字
