@@ -1,10 +1,12 @@
 let video;
 let handPose;
 let hands = [];
+let font;
 
 function preload() {
   // 載入 handPose 模型
   handPose = ml5.handPose();
+  font = loadFont('Outfit-Regular.ttf'); // 確保字型檔案存在於專案目錄中
 }
 
 function setup() {
