@@ -1,12 +1,10 @@
 let video;
 let handPose;
 let hands = [];
-let font;
 
 function preload() {
-  // 載入 handPose 模型
-  handPose = ml5.handPose();
-  font = loadFont('Outfit-Regular.ttf'); // 確保字型檔案存在於專案目錄中
+  // 載入 handpose 模型
+  handPose = ml5.handpose();
 }
 
 function setup() {
@@ -18,8 +16,9 @@ function setup() {
   video.size(640, 480); // 設定影像大小
   video.hide(); // 隱藏原始的 HTML 視訊元素
 
-  // 啟動 handPose 模型並開始偵測手部
-  handPose.detectStart(video, gotHands);
+  // 啟動 handpose 模型並開始偵測手部
+  handPose.on('predict', gotHands);
+  handPose.video = video;
 }
 
 function draw() {
@@ -33,11 +32,11 @@ function draw() {
   // 繪製所有偵測到的手部關鍵點
   for (let i = 0; i < hands.length; i++) {
     let hand = hands[i];
-    for (let j = 0; j < hand.keypoints.length; j++) {
-      let keypoint = hand.keypoints[j];
+    for (let j = 0; j < hand.landmarks.length; j++) {
+      let keypoint = hand.landmarks[j];
       fill(0, 255, 0); // 綠色填充
       noStroke();
-      circle(keypoint.x, keypoint.y, 10); // 繪製關鍵點
+      circle(keypoint[0], keypoint[1], 10); // 繪製關鍵點
     }
   }
 
@@ -48,7 +47,7 @@ function draw() {
   text('影像辨識中...', 10, 40);
 }
 
-// handPose 模型的回呼函數，當有偵測結果時觸發
+// handpose 模型的回呼函數，當有偵測結果時觸發
 function gotHands(results) {
   // 將結果儲存到 hands 變數
   hands = results;
