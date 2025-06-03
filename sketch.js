@@ -49,7 +49,7 @@ function draw() {
 }
 
 function gotHands(results) {
-  console.log(results); // 檢查結果是否正確
+  console.log('Detected hands:', results); // 檢查偵測到的手部數量
   hands = results; // 儲存所有偵測到的手部資料
 }
 
