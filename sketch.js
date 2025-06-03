@@ -72,6 +72,11 @@ function draw() {
     ellipse(bubble.x, bubble.y, bubble.r * 2);
   }
 
+  // 確保泡泡數量不超過 5 顆
+  while (bubbles.length > 5) {
+    bubbles.pop(); // 移除多餘的泡泡
+  }
+
   // 恢復畫布翻轉，繪製不被翻轉的文字
   resetMatrix();
   fill(255, 0, 0);
