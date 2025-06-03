@@ -11,6 +11,10 @@ function setup() {
 }
 
 function draw() {
+  // 翻轉畫布以修正影像左右顛倒
+  translate(width, 0); // 將原點移到畫布右上角
+  scale(-1, 1); // 水平翻轉畫布
+
   // 將攝影機影像繪製到畫布上
   image(video, 0, 0, width, height);
 
