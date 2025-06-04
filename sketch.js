@@ -6,21 +6,22 @@ let questions = [
   {
     q: "淡江教育科技學系英文簡稱是什麼?",
     options: ["TKUET", "TKUIE", "TKUIB", "TKUIC"],
-    answer: 0
+    answer: 0 // 0:比1，1:比2，2:比3，3:比4
   },
   {
     q: "以下哪項是淡江教育科技學系的大一必修課程?",
     options: ["數位學習導入與經營", "教學設計", "介面設計", "平面設計"],
-    answer: 3
+    answer: 3 // 0:比1，1:比2，2:比3，3:比4
   },
   {
     q: "下列哪項是淡江教育科技學系的專業選修課程?",
     options: ["3D動畫製作", "國文", "體育", "微積分"],
-    answer: 0
+    answer: 0 // 0:比1，1:比2，2:比3，3:比4
   }
 ];
 let currentQuestion = 0;
 let gameOver = false;
+const displayOrder = [1, 0, 3, 2]; // 泡泡順序
 
 function preload() {
   video = createCapture(VIDEO);
@@ -91,12 +92,11 @@ function draw() {
     translate(bubble.x, bubble.y);
     scale(-1, 1);
     fill(255);
-    text(questions[currentQuestion].options[i], 0, 0);
+    text(questions[currentQuestion].options[displayOrder[i]], 0, 0);
     pop();
   }
 
-  // 繪製所有偵測到的手部關鍵點，並檢查碰撞
-  let answered = false;
+  // 繪製所有偵測到的手部關鍵點
   for (let i = 0; i < hands.length; i++) {
     let hand = hands[i];
     for (let j = 0; j < hand.landmarks.length; j++) {
@@ -104,22 +104,40 @@ function draw() {
       fill(0, 255, 0);
       noStroke();
       circle(keypoint[0], keypoint[1], 10);
+    }
+  }
 
-      // 檢查是否碰到泡泡
-      for (let k = 0; k < bubbles.length; k++) {
-        let bubble = bubbles[k];
-        let d = dist(keypoint[0], keypoint[1], bubble.x, bubble.y);
-        if (d < bubble.r && !answered) {
-          answered = true;
-          if (k === questions[currentQuestion].answer) {
-            nextQuestion();
-          } else {
-            gameOver = true;
-          }
-        }
+  // 判斷手勢（只判斷第一隻手）
+  if (hands.length > 0) {
+    let gesture = detectFingerNumber(hands[0]);
+    if (gesture !== null) {
+      if (gesture === questions[currentQuestion].answer + 1) {
+        nextQuestion();
+      } else {
+        gameOver = true;
       }
     }
   }
+}
+
+// 偵測伸出幾根手指（1~4），只判斷食指~小指
+function detectFingerNumber(hand) {
+  // hand.landmarks: 21個點
+  // 指尖索引: [4, 8, 12, 16, 20] (大拇指, 食指, 中指, 無名指, 小指)
+  // 指根索引: [2, 5, 9, 13, 17]
+  let tips = [8, 12, 16, 20]; // 食指~小指
+  let bases = [6, 10, 14, 18];
+  let count = 0;
+  for (let i = 0; i < 4; i++) {
+    if (hand.landmarks[tips[i]][1] < hand.landmarks[bases[i]][1]) {
+      count++;
+    }
+  }
+  // 只允許1~4根手指
+  if (count >= 1 && count <= 4) {
+    return count;
+  }
+  return null;
 }
 
 function gotHands(results) {
