@@ -79,7 +79,7 @@ function windowResized() {
 }
 
 function setupBubbles() {
-  let r = 100; // 泡泡半徑改為100
+  let r = 75;
   bubbles = [
     { x: r, y: r, r: r },                             // 左上
     { x: width - r, y: r, r: r },                     // 右上
@@ -118,28 +118,21 @@ function draw() {
     // 處理選項文字
     let optionText = questions[currentQuestion].options[displayOrder[i]];
     let maxTextWidth = bubble.r * 1.7; // 泡泡內最大文字寬度
-    let fontSize = 32;
+    let fontSize = 20;
     textAlign(CENTER, CENTER);
 
-    // 動態調整字型大小，直到多行文字每行都能放進泡泡
-    let lines = [];
+    // 動態調整字型大小，直到文字寬度適合泡泡
     textSize(fontSize);
-    do {
-      lines = breakLines(optionText, fontSize, maxTextWidth);
-      if (lines.length * fontSize > bubble.r * 1.5 && fontSize > 12) {
-        fontSize--;
-        textSize(fontSize);
-      } else {
-        break;
-      }
-    } while (fontSize > 12);
+    while (textWidth(optionText) > maxTextWidth && fontSize > 10) {
+      fontSize--;
+      textSize(fontSize);
+    }
 
+    // 換行顯示（若有空格或標點可自動斷行）
     fill(255);
     push();
-    translate(bubble.x, bubble.y - ((lines.length - 1) * fontSize) / 2); // 垂直置中
-    for (let l = 0; l < lines.length; l++) {
-      text(lines[l], 0, l * fontSize, maxTextWidth, fontSize * 1.2);
-    }
+    translate(bubble.x, bubble.y);
+    text(optionText, 0, 0, maxTextWidth, bubble.r * 1.5);
     pop();
   }
 
@@ -250,24 +243,5 @@ function mousePressed() {
     answerTimer = millis(); // 重新計時
     canAnswer = true;
   }
-}
-
-// 工具函式：將長文字依最大寬度自動斷行
-function breakLines(str, fontSize, maxWidth) {
-  let words = str.split(/[\s　]/); // 支援全形/半形空白
-  let lines = [];
-  let current = "";
-  textSize(fontSize);
-  for (let i = 0; i < words.length; i++) {
-    let testLine = current.length > 0 ? current + " " + words[i] : words[i];
-    if (textWidth(testLine) > maxWidth && current.length > 0) {
-      lines.push(current);
-      current = words[i];
-    } else {
-      current = testLine;
-    }
-  }
-  if (current.length > 0) lines.push(current);
-  return lines;
 }
 
