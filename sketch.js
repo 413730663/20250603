@@ -31,10 +31,11 @@ let questions = [
 ];
 let currentQuestion = 0;
 let gameOver = false;
+let gameClear = false; // 新增：過關狀態
 const displayOrder = [0, 1, 2, 3]; // 泡泡順序 (左上、右上、右下、左下)
 // 0: 左上, 1: 右上, 2: 左下, 3: 右下
 let videoW = 0, videoH = 0, videoX = 0, videoY = 0;
-let canAnswer = true; // 新增：是否允許判斷手勢
+let canAnswer = true;
 let answerTimer = 0;
 let answerDelay = 5000; // 5秒
 let gestureResult = null;
@@ -62,15 +63,15 @@ function setup() {
   videoX = width / 2 - videoW / 2;
   videoY = height - videoH - 20; // 距離底部20px
 
-  answerTimer = millis(); // 啟動計時
+  answerTimer = millis();
   gestureResult = null;
   canAnswer = true;
+  gameClear = false;
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   setupBubbles();
-  // 重新計算視訊位置（放在畫面正下方）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
@@ -89,6 +90,17 @@ function setupBubbles() {
 
 function draw() {
   background(255);
+
+  // 過關畫面
+  if (gameClear) {
+    fill(0, 180, 0);
+    textSize(48);
+    textAlign(CENTER, CENTER);
+    text("恭喜過關！遊戲結束", width / 2, height / 2 - 30);
+    textSize(28);
+    text("點擊畫面重新挑戰", width / 2, height / 2 + 30);
+    return;
+  }
 
   // 題目顯示在畫面正上方
   fill(0);
@@ -153,12 +165,17 @@ function draw() {
   }
 
   // 5秒到才判斷
-  if (!gameOver && millis() - answerTimer >= answerDelay && canAnswer) {
+  if (!gameOver && !gameClear && millis() - answerTimer >= answerDelay && canAnswer) {
     canAnswer = false; // 只判斷一次
     if (gestureResult === questions[currentQuestion].answer + 1) {
       setTimeout(() => {
-        nextQuestion();
-      }, 1000); // 1秒後進入下一題
+        // 若已經是最後一題，顯示過關畫面
+        if (currentQuestion === questions.length - 1) {
+          gameClear = true;
+        } else {
+          nextQuestion();
+        }
+      }, 1000); // 1秒後進入下一題或過關
     } else {
       setTimeout(() => {
         gameOver = true;
@@ -198,9 +215,6 @@ function gotHands(results) {
 
 function nextQuestion() {
   currentQuestion++;
-  if (currentQuestion >= questions.length) {
-    currentQuestion = 0;
-  }
   setupBubbles();
   gameOver = false;
   gestureResult = null;
@@ -209,10 +223,11 @@ function nextQuestion() {
 }
 
 function mousePressed() {
-  if (gameOver) {
+  if (gameOver || gameClear) {
     currentQuestion = 0;
     setupBubbles();
     gameOver = false;
+    gameClear = false;
     gestureResult = null;
     answerTimer = millis(); // 重新計時
     canAnswer = true;
