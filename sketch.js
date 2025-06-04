@@ -57,11 +57,11 @@ function setup() {
   btn.position(10, height + 10);
   btn.mousePressed(nextQuestion);
 
-  // 計算縮小後的視訊大小與位置（放在畫面正中間）
+  // 計算縮小後的視訊大小與位置（放在畫面正下方）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
-  videoY = height / 2 - videoH / 2; // 正中間
+  videoY = height - videoH - 20; // 距離底部20px
 
   answerTimer = millis();
   gestureResult = null;
@@ -72,11 +72,10 @@ function setup() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   setupBubbles();
-  // 重新計算視訊位置（正中間）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
-  videoY = height / 2 - videoH / 2;
+  videoY = height - videoH - 20;
 }
 
 function setupBubbles() {
@@ -109,46 +108,20 @@ function draw() {
   textAlign(CENTER, TOP);
   text(questions[currentQuestion].q, width / 2, 20);
 
-  // 繪製泡泡與選項（自動縮小字型並換行以完整顯示）
+  // 繪製泡泡
+  textSize(20);
+  textAlign(CENTER, CENTER);
   for (let i = 0; i < bubbles.length; i++) {
     let bubble = bubbles[i];
     fill(0, 0, 255, 150);
     noStroke();
     ellipse(bubble.x, bubble.y, bubble.r * 2);
 
-    // 處理選項文字
-    let optionText = questions[currentQuestion].options[displayOrder[i]];
-    let maxTextWidth = bubble.r * 1.7; // 泡泡內最大文字寬度
-    let fontSize = 32;
-    textAlign(CENTER, CENTER);
-
-    // 動態調整字型大小，直到每行都能放進泡泡
-    let lines = [];
-    textSize(fontSize);
-    do {
-      lines = breakLines(optionText, fontSize, maxTextWidth);
-      // 若總高度超過泡泡，縮小字型
-      if (lines.length * fontSize > bubble.r * 1.4 && fontSize > 12) {
-        fontSize--;
-        textSize(fontSize);
-      } else {
-        break;
-      }
-    } while (fontSize > 12);
-
+    // 選項文字
     fill(255);
     push();
-    // 垂直置中：讓多行文字的中心對齊泡泡中心
-    let totalHeight = lines.length * fontSize;
-    for (let l = 0; l < lines.length; l++) {
-      text(
-        lines[l],
-        bubble.x,
-        bubble.y - totalHeight / 2 + l * fontSize + fontSize / 2,
-        maxTextWidth,
-        fontSize * 1.2
-      );
-    }
+    translate(bubble.x, bubble.y);
+    text(questions[currentQuestion].options[displayOrder[i]], 0, 0);
     pop();
   }
 
@@ -259,24 +232,5 @@ function mousePressed() {
     answerTimer = millis(); // 重新計時
     canAnswer = true;
   }
-}
-
-// 工具函式：將長文字依最大寬度自動斷行
-function breakLines(str, fontSize, maxWidth) {
-  let words = str.split(/[\s　]/); // 支援全形/半形空白
-  let lines = [];
-  let current = "";
-  textSize(fontSize);
-  for (let i = 0; i < words.length; i++) {
-    let testLine = current.length > 0 ? current + " " + words[i] : words[i];
-    if (textWidth(testLine) > maxWidth && current.length > 0) {
-      lines.push(current);
-      current = words[i];
-    } else {
-      current = testLine;
-    }
-  }
-  if (current.length > 0) lines.push(current);
-  return lines;
 }
 
