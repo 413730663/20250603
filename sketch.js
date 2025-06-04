@@ -109,7 +109,7 @@ function draw() {
   text(questions[currentQuestion].q, width / 2, 20);
 
   // 繪製泡泡
-  textSize(20);
+  textSize(16);
   textAlign(CENTER, CENTER);
   for (let i = 0; i < bubbles.length; i++) {
     let bubble = bubbles[i];
