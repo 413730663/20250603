@@ -79,7 +79,7 @@ function windowResized() {
 }
 
 function setupBubbles() {
-  let r = 75;
+  let r = 125; // 泡泡半徑改為125
   bubbles = [
     { x: r, y: r, r: r },                             // 左上
     { x: width - r, y: r, r: r },                     // 右上
