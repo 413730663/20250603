@@ -108,20 +108,31 @@ function draw() {
   textAlign(CENTER, TOP);
   text(questions[currentQuestion].q, width / 2, 20);
 
-  // 繪製泡泡
-  textSize(20);
-  textAlign(CENTER, CENTER);
+  // 繪製泡泡與選項（自動縮小字型並換行以完整顯示）
   for (let i = 0; i < bubbles.length; i++) {
     let bubble = bubbles[i];
     fill(0, 0, 255, 150);
     noStroke();
     ellipse(bubble.x, bubble.y, bubble.r * 2);
 
-    // 選項文字
+    // 處理選項文字
+    let optionText = questions[currentQuestion].options[displayOrder[i]];
+    let maxTextWidth = bubble.r * 1.7; // 泡泡內最大文字寬度
+    let fontSize = 20;
+    textAlign(CENTER, CENTER);
+
+    // 動態調整字型大小，直到文字寬度適合泡泡
+    textSize(fontSize);
+    while (textWidth(optionText) > maxTextWidth && fontSize > 10) {
+      fontSize--;
+      textSize(fontSize);
+    }
+
+    // 換行顯示（若有空格或標點可自動斷行）
     fill(255);
     push();
     translate(bubble.x, bubble.y);
-    text(questions[currentQuestion].options[displayOrder[i]], 0, 0);
+    text(optionText, 0, 0, maxTextWidth, bubble.r * 1.5);
     pop();
   }
 
