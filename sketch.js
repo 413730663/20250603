@@ -21,7 +21,8 @@ let questions = [
 ];
 let currentQuestion = 0;
 let gameOver = false;
-const displayOrder = [1, 0, 3, 2]; // 泡泡順序
+const displayOrder = [0, 1, 2, 3]; // 泡泡順序 (左上、右上、右下、左下)
+// 0: 左上, 1: 右上, 2: 左下, 3: 右下
 let videoW = 0, videoH = 0, videoX = 0, videoY = 0;
 
 function preload() {
@@ -41,21 +42,21 @@ function setup() {
   btn.position(10, height + 10);
   btn.mousePressed(nextQuestion);
 
-  // 計算縮小後的視訊大小與位置
+  // 計算縮小後的視訊大小與位置（放在畫面正下方）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
-  videoY = height / 2 - videoH / 2;
+  videoY = height - videoH - 20; // 距離底部20px
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   setupBubbles();
-  // 重新計算視訊位置
+  // 重新計算視訊位置（放在畫面正下方）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
-  videoY = height / 2 - videoH / 2;
+  videoY = height - videoH - 20;
 }
 
 function setupBubbles() {
@@ -94,10 +95,11 @@ function draw() {
     pop();
   }
 
-  // 視訊畫面縮小後置中顯示
+  // 視訊畫面縮小後置中顯示，並水平翻轉
   push();
-  // 不鏡像，直接顯示
-  image(video, videoX, videoY, videoW, videoH);
+  translate(videoX + videoW, videoY); // 移到視訊右側
+  scale(-1, 1); // 水平翻轉
+  image(video, 0, 0, videoW, videoH);
   pop();
 
   // 將手部關鍵點座標轉換到縮小後的視訊畫面上
@@ -105,8 +107,9 @@ function draw() {
     let hand = hands[i];
     for (let j = 0; j < hand.landmarks.length; j++) {
       let keypoint = hand.landmarks[j];
-      // 原始座標是640x480，需轉換到縮小後的位置
+      // 原始座標是640x480，需轉換到縮小後的位置（同時水平翻轉）
       let x = map(keypoint[0], 0, 640, videoX, videoX + videoW);
+      x = videoX + videoW - (x - videoX); // 水平翻轉
       let y = map(keypoint[1], 0, 480, videoY, videoY + videoH);
       fill(0, 255, 0);
       noStroke();
