@@ -24,6 +24,10 @@ let gameOver = false;
 const displayOrder = [0, 1, 2, 3]; // 泡泡順序 (左上、右上、右下、左下)
 // 0: 左上, 1: 右上, 2: 左下, 3: 右下
 let videoW = 0, videoH = 0, videoX = 0, videoY = 0;
+let canAnswer = true; // 新增：是否允許判斷手勢
+let answerTimer = 0;
+let answerDelay = 5000; // 5秒
+let gestureResult = null;
 
 function preload() {
   video = createCapture(VIDEO);
@@ -47,6 +51,10 @@ function setup() {
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
   videoY = height - videoH - 20; // 距離底部20px
+
+  answerTimer = millis(); // 啟動計時
+  gestureResult = null;
+  canAnswer = true;
 }
 
 function windowResized() {
@@ -97,8 +105,8 @@ function draw() {
 
   // 視訊畫面縮小後置中顯示，並水平翻轉
   push();
-  translate(videoX + videoW, videoY); // 移到視訊右側
-  scale(-1, 1); // 水平翻轉
+  translate(videoX + videoW, videoY);
+  scale(-1, 1);
   image(video, 0, 0, videoW, videoH);
   pop();
 
@@ -117,15 +125,34 @@ function draw() {
     }
   }
 
-  // 判斷手勢（只判斷第一隻手）
-  if (hands.length > 0) {
+  // 顯示倒數計時
+  if (!gameOver) {
+    fill(255, 0, 0);
+    textSize(24);
+    textAlign(CENTER, TOP);
+    let remain = max(0, ceil((answerDelay - (millis() - answerTimer)) / 1000));
+    text("請在 " + remain + " 秒內比出手勢", width / 2, 60);
+  }
+
+  // 只在5秒內記錄手勢
+  if (!gameOver && hands.length > 0 && millis() - answerTimer < answerDelay) {
     let gesture = detectFingerNumber(hands[0]);
     if (gesture !== null) {
-      if (gesture === questions[currentQuestion].answer + 1) {
+      gestureResult = gesture;
+    }
+  }
+
+  // 5秒到才判斷
+  if (!gameOver && millis() - answerTimer >= answerDelay && canAnswer) {
+    canAnswer = false; // 只判斷一次
+    if (gestureResult === questions[currentQuestion].answer + 1) {
+      setTimeout(() => {
         nextQuestion();
-      } else {
+      }, 1000); // 1秒後進入下一題
+    } else {
+      setTimeout(() => {
         gameOver = true;
-      }
+      }, 1000);
     }
   }
 
@@ -166,6 +193,9 @@ function nextQuestion() {
   }
   setupBubbles();
   gameOver = false;
+  gestureResult = null;
+  answerTimer = millis(); // 重新計時
+  canAnswer = true;
 }
 
 function mousePressed() {
@@ -173,6 +203,9 @@ function mousePressed() {
     currentQuestion = 0;
     setupBubbles();
     gameOver = false;
+    gestureResult = null;
+    answerTimer = millis(); // 重新計時
+    canAnswer = true;
   }
 }
 
