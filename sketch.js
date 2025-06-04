@@ -57,11 +57,11 @@ function setup() {
   btn.position(10, height + 10);
   btn.mousePressed(nextQuestion);
 
-  // 計算縮小後的視訊大小與位置（放在畫面正下方）
+  // 計算縮小後的視訊大小與位置（放在畫面正中間）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
-  videoY = height - videoH - 20; // 距離底部20px
+  videoY = height / 2 - videoH / 2; // 正中間
 
   answerTimer = millis();
   gestureResult = null;
@@ -72,10 +72,11 @@ function setup() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   setupBubbles();
+  // 重新計算視訊位置（正中間）
   videoW = int(width * 0.3);
   videoH = int(video.height * (videoW / video.width));
   videoX = width / 2 - videoW / 2;
-  videoY = height - videoH - 20;
+  videoY = height / 2 - videoH / 2;
 }
 
 function setupBubbles() {
