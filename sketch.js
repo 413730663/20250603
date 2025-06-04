@@ -136,7 +136,7 @@ function draw() {
 
     fill(255);
     push();
-    translate(bubble.x, bubble.y - (lines.length - 1) * fontSize / 2);
+    translate(bubble.x, bubble.y - ((lines.length - 1) * fontSize) / 2); // 垂直置中
     for (let l = 0; l < lines.length; l++) {
       text(lines[l], 0, l * fontSize, maxTextWidth, fontSize * 1.2);
     }
