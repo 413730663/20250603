@@ -108,46 +108,20 @@ function draw() {
   textAlign(CENTER, TOP);
   text(questions[currentQuestion].q, width / 2, 20);
 
-  // 繪製泡泡與選項（自動縮小字型並換行以完整顯示）
+  // 繪製泡泡
+  textSize(20);
+  textAlign(CENTER, CENTER);
   for (let i = 0; i < bubbles.length; i++) {
     let bubble = bubbles[i];
     fill(0, 0, 255, 150);
     noStroke();
     ellipse(bubble.x, bubble.y, bubble.r * 2);
 
-    // 處理選項文字
-    let optionText = questions[currentQuestion].options[displayOrder[i]];
-    let maxTextWidth = bubble.r * 1.7; // 泡泡內最大文字寬度
-    let fontSize = 32;
-    textAlign(CENTER, CENTER);
-
-    // 動態調整字型大小，直到每行都能放進泡泡
-    let lines = [];
-    textSize(fontSize);
-    do {
-      lines = breakLines(optionText, fontSize, maxTextWidth);
-      // 若總高度超過泡泡或有行超寬，縮小字型
-      if (lines.length * fontSize > bubble.r * 1.4 || lines.some(line => textWidth(line) > maxTextWidth)) {
-        fontSize--;
-        textSize(fontSize);
-      } else {
-        break;
-      }
-    } while (fontSize > 12);
-
+    // 選項文字
     fill(255);
     push();
-    // 垂直置中：讓多行文字的中心對齊泡泡中心
-    let totalHeight = lines.length * fontSize;
-    for (let l = 0; l < lines.length; l++) {
-      text(
-        lines[l],
-        bubble.x,
-        bubble.y - totalHeight / 2 + l * fontSize + fontSize / 2,
-        maxTextWidth,
-        fontSize * 1.2
-      );
-    }
+    translate(bubble.x, bubble.y);
+    text(questions[currentQuestion].options[displayOrder[i]], 0, 0);
     pop();
   }
 
@@ -258,24 +232,5 @@ function mousePressed() {
     answerTimer = millis(); // 重新計時
     canAnswer = true;
   }
-}
-
-// 工具函式：將長文字依最大寬度自動斷行
-function breakLines(str, fontSize, maxWidth) {
-  let words = str.split(/([\s　])/); // 保留空白做斷行
-  let lines = [];
-  let current = "";
-  textSize(fontSize);
-  for (let i = 0; i < words.length; i++) {
-    let testLine = current + words[i];
-    if (textWidth(testLine) > maxWidth && current.length > 0) {
-      lines.push(current.trim());
-      current = words[i];
-    } else {
-      current = testLine;
-    }
-  }
-  if (current.length > 0) lines.push(current.trim());
-  return lines;
 }
 
