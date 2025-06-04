@@ -22,17 +22,14 @@ function setup() {
   createCanvas(640, 480);
   console.log('Setup complete!');
 
-  // 生成 5 顆泡泡
-  for (let i = 0; i < 5; i++) {
-    let bubble = {
-      x: random(width), // 隨機 x 座標
-      y: random(height), // 隨機 y 座標
-      r: random(30, 50), // 隨機半徑（調大）
-      xSpeed: random(-2, 2), // 隨機水平速度
-      ySpeed: random(-2, 2) // 隨機垂直速度
-    };
-    bubbles.push(bubble);
-  }
+  // 生成 4 顆泡泡，分別位於四個角落
+  let r = 50; // 泡泡半徑
+  bubbles = [
+    { x: r, y: r, r: r },                         // 左上
+    { x: width - r, y: r, r: r },                 // 右上
+    { x: r, y: height - r, r: r },                // 左下
+    { x: width - r, y: height - r, r: r }         // 右下
+  ];
 }
 
 function draw() {
@@ -54,27 +51,12 @@ function draw() {
     }
   }
 
-  // 繪製泡泡
+  // 繪製四個角落的泡泡
   for (let i = 0; i < bubbles.length; i++) {
     let bubble = bubbles[i];
-
-    // 更新泡泡位置
-    bubble.x += bubble.xSpeed;
-    bubble.y += bubble.ySpeed;
-
-    // 碰到邊界反彈
-    if (bubble.x < 0 || bubble.x > width) bubble.xSpeed *= -1;
-    if (bubble.y < 0 || bubble.y > height) bubble.ySpeed *= -1;
-
-    // 繪製泡泡
     fill(0, 0, 255, 150); // 半透明藍色
     noStroke();
     ellipse(bubble.x, bubble.y, bubble.r * 2);
-  }
-
-  // 確保泡泡數量不超過 5 顆
-  while (bubbles.length > 5) {
-    bubbles.pop(); // 移除多餘的泡泡
   }
 
   // 恢復畫布翻轉，繪製不被翻轉的文字
