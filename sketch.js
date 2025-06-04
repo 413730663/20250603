@@ -122,12 +122,13 @@ function draw() {
     let fontSize = 32;
     textAlign(CENTER, CENTER);
 
-    // 斷行：將選項依空白或標點切分，讓每行都不超過最大寬度
+    // 動態調整字型大小，直到每行都能放進泡泡
     let lines = [];
     textSize(fontSize);
     do {
       lines = breakLines(optionText, fontSize, maxTextWidth);
-      if (lines.length * fontSize > bubble.r * 1.5 && fontSize > 12) {
+      // 若總高度超過泡泡，縮小字型
+      if (lines.length * fontSize > bubble.r * 1.4 && fontSize > 12) {
         fontSize--;
         textSize(fontSize);
       } else {
@@ -138,9 +139,15 @@ function draw() {
     fill(255);
     push();
     // 垂直置中：讓多行文字的中心對齊泡泡中心
-    translate(bubble.x, bubble.y - ((lines.length - 1) * fontSize) / 2);
+    let totalHeight = lines.length * fontSize;
     for (let l = 0; l < lines.length; l++) {
-      text(lines[l], 0, l * fontSize, maxTextWidth, fontSize * 1.2);
+      text(
+        lines[l],
+        bubble.x,
+        bubble.y - totalHeight / 2 + l * fontSize + fontSize / 2,
+        maxTextWidth,
+        fontSize * 1.2
+      );
     }
     pop();
   }
